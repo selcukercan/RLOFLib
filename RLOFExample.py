@@ -22,8 +22,8 @@ parameters = {  "SolverType" : "ST_BILINEAR",
 # load images
 #prevImg = cv2.imread('../Doc/ErnstReuter1.png')
 #currImg = cv2.imread('../Doc/ErnstReuter2.png')
-prevImg = cv2.imread('../Doc/city_1.png')
-currImg = cv2.imread('../Doc/city_2.png')
+prevImg = cv2.imread('../Doc/ErnstReuter1.png')
+currImg = cv2.imread('../Doc/ErnstReuter2.png')
 
 rlofProc = rlof.RLOFEstimator()
 rlofProc.set_param(parameters["SolverType"],
@@ -63,6 +63,7 @@ for i,(new,old) in enumerate(zip(currPoints,prevPoints)):
 # write results
 cv2.imwrite("SparseFlow.png", sparseFlowImg)
 
+"""
 # dense optical flow estimation
 start = time.time();
 flow = rlofProc.dense_flow(prevImg, currImg)
@@ -82,3 +83,4 @@ denseFlowImg = cv2.cvtColor(hsv,cv2.COLOR_HSV2BGR)
 
 #write results
 cv2.imwrite("DenseFlow.png", denseFlowImg)
+"""
