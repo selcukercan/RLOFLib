@@ -1,12 +1,12 @@
 import numpy as np
 import cv2
 import rlof
-import time 
+import time
 
 
 # set rlof parameters
 parameters = {  "SolverType" : "ST_BILINEAR",
-                "SupportRegionType" : "SR_CROSS", 
+                "SupportRegionType" : "SR_CROSS",
                 "maxLevel" : 9,
                 "maxIter" : 30,
                 "largeWinSize" : 21,
@@ -17,31 +17,33 @@ parameters = {  "SolverType" : "ST_BILINEAR",
 				"RansacReprojThresholdPercentil": 10.0 ,
 				"minEigenvalue": 0.0001 ,
 				"useIlluminationModel": True ,
-				"useGlobalMotionPrior": False 
-				} 
-# load images 
-prevImg = cv2.imread('../Doc/ErnstReuter1.png')
-currImg = cv2.imread('../Doc/ErnstReuter2.png')
+				"useGlobalMotionPrior": False
+				}
+# load images
+#prevImg = cv2.imread('../Doc/ErnstReuter1.png')
+#currImg = cv2.imread('../Doc/ErnstReuter2.png')
+prevImg = cv2.imread('../Doc/city_1.png')
+currImg = cv2.imread('../Doc/city_2.png')
 
 rlofProc = rlof.RLOFEstimator()
-rlofProc.set_param(parameters["SolverType"], 
+rlofProc.set_param(parameters["SolverType"],
 	parameters["SupportRegionType"],
-	parameters["maxLevel"], parameters["maxIter"], 
-	parameters["largeWinSize"], 
+	parameters["maxLevel"], parameters["maxIter"],
+	parameters["largeWinSize"],
 	parameters["smallWinSize"],
-  parameters["HampelNormS0"], 
-  parameters["HampelNormS1"],  
-  parameters["segmentationThreshold"], 
-  parameters["RansacReprojThresholdPercentil"], 
-  parameters["minEigenvalue"], 
-  parameters["useIlluminationModel"], 
+  parameters["HampelNormS0"],
+  parameters["HampelNormS1"],
+  parameters["segmentationThreshold"],
+  parameters["RansacReprojThresholdPercentil"],
+  parameters["minEigenvalue"],
+  parameters["useIlluminationModel"],
   parameters["useGlobalMotionPrior"])
 
-# prepare pointlist 
+# prepare pointlist
 (h,w) = (prevImg.shape[0], prevImg.shape[1] )
 a = np.meshgrid( np.arange(9,w,10) , np.arange(9,h,10))
-prevPoints = np.vstack((a[0].ravel(), a[1].ravel() )).transpose().astype(np.float32).copy()				   
-				
+prevPoints = np.vstack((a[0].ravel(), a[1].ravel() )).transpose().astype(np.float32).copy()
+
 # sparse optical flow estimation e.g. to compute a grid of motion vectors
 start = time.time();
 currPoints = rlofProc.sparse_flow(prevImg, currImg, prevPoints)
@@ -58,9 +60,9 @@ for i,(new,old) in enumerate(zip(currPoints,prevPoints)):
 	if( a >= 0 and a < prevImg.shape[1] and b >= 0 and b < prevImg.shape[0]):
 		sparseFlowImg = cv2.line(sparseFlowImg, (a,b),(c,d), (0,255,0), 1)
 
-# write results		
+# write results
 cv2.imwrite("SparseFlow.png", sparseFlowImg)
-		
+
 # dense optical flow estimation
 start = time.time();
 flow = rlofProc.dense_flow(prevImg, currImg)
